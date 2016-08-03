@@ -17,6 +17,7 @@ var (
 	ErrCursorBucket = errors.New("Cursor is at bucket")
 )
 
+// Cursor is a wrapper around *bolt.Cursor
 type Cursor struct {
 	raw *bolt.Cursor
 }
