@@ -3,6 +3,7 @@ package nut
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	"github.com/boltdb/bolt"
 )
@@ -37,10 +38,9 @@ func (b *Bucket) Delete(key string) error {
 	return b.raw.Delete([]byte(key))
 }
 
-// Get is a wrapper around (*bolt.Bucket).Get()
-//
-// Get takes a key and a struct to unmarshal into and returns an error if the
-// key does not exist or the Unmarshaling failed.
+// Get is a wrapper around (*bolt.Bucket).Get() which takes a key and
+// a struct to unmarshal into and returns an error if the key does not
+// exist or the Unmarshaling failed.
 func (b *Bucket) Get(key string, out interface{}) error {
 	data := b.raw.Get([]byte(key))
 	if data == nil {
@@ -68,11 +68,23 @@ func (b *Bucket) Put(key string, in interface{}) error {
 // func (b *Bucket) CreateBucketIfNotExists(key []byte) (*Bucket, error)
 // func (b *Bucket) DeleteBucket(key []byte) error
 // func (b *Bucket) ForEach(fn func(k, v []byte) error) error
-// func (b *Bucket) NextSequence() (uint64, error)
 // func (b *Bucket) Root() pgid
 // func (b *Bucket) Stats() BucketStats
 // func (b *Bucket) Tx() *Tx
 // func (b *Bucket) Writable() bool
+
+// NextID is a loose wrapper around (*bolt.Bucket).NextSequence()
+// which will return the next sequence from the DB in base32. This may
+// be changed later, but if this happens, it will be ensured that any
+// new IDs will not conflict with lower IDs.
+func (b *Bucket) NextID() (string, error) {
+	i, err := b.raw.NextSequence()
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatUint(i, 32), nil
+}
 
 // Raw will return a reference to the backing *bolt.Bucket
 func (b *Bucket) Raw() *bolt.Bucket {
