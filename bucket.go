@@ -22,6 +22,15 @@ func (b *Bucket) Bucket(name string) *Bucket {
 	return ret
 }
 
+// Cursor is a wrapper around (*bolt.Bucket).Cursor()
+func (b *Bucket) Cursor() *Cursor {
+	ret := &Cursor{
+		raw: b.raw.Cursor(),
+	}
+
+	return ret
+}
+
 // Delete is a wrapper around (*bolt.Bucket).Delete() which takes a string for
 // the key name in place of a []byte.
 func (b *Bucket) Delete(key string) error {
@@ -57,7 +66,6 @@ func (b *Bucket) Put(key string, in interface{}) error {
 // Unimplemented Bucket methods
 // func (b *Bucket) CreateBucket(key []byte) (*Bucket, error)
 // func (b *Bucket) CreateBucketIfNotExists(key []byte) (*Bucket, error)
-// func (b *Bucket) Cursor() *Cursor
 // func (b *Bucket) DeleteBucket(key []byte) error
 // func (b *Bucket) ForEach(fn func(k, v []byte) error) error
 // func (b *Bucket) NextSequence() (uint64, error)
