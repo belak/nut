@@ -25,16 +25,16 @@ func Open(path string, mode os.FileMode) (*DB, error) {
 		return nil, err
 	}
 
-	return NewDB(raw)
+	return NewDB(raw), nil
 }
 
 // NewDB will create a new nutdb given a boltdb.
-func NewDB(rawDB *bolt.DB) (*DB, error) {
+func NewDB(rawDB *bolt.DB) *DB {
 	db := &DB{
 		raw: rawDB,
 	}
 
-	return db, nil
+	return db
 }
 
 // Close wraps (*bolt.DB).Close()
