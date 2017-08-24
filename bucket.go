@@ -23,6 +23,20 @@ func (b *Bucket) Bucket(name string) *Bucket {
 	return ret
 }
 
+// CreateBucketIfNotExists is a wrapper around
+// (*bolt.Bucket).CreateBucketIfNotExists which takes a string for the key in
+// place of a []byte.
+func (b *Bucket) CreateBucketIfNotExists(name string) (*Bucket, error) {
+	rawBucket, err := b.raw.CreateBucketIfNotExists([]byte(name))
+	if err != nil {
+		return nil, err
+	}
+
+	return &Bucket{
+		raw: rawBucket,
+	}, nil
+}
+
 // Cursor is a wrapper around (*bolt.Bucket).Cursor()
 func (b *Bucket) Cursor() *Cursor {
 	ret := &Cursor{
@@ -65,7 +79,6 @@ func (b *Bucket) Put(key string, in interface{}) error {
 
 // Unimplemented Bucket methods
 // func (b *Bucket) CreateBucket(key []byte) (*Bucket, error)
-// func (b *Bucket) CreateBucketIfNotExists(key []byte) (*Bucket, error)
 // func (b *Bucket) DeleteBucket(key []byte) error
 // func (b *Bucket) ForEach(fn func(k, v []byte) error) error
 // func (b *Bucket) Root() pgid
